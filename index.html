@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тест з інформатики (Teams Protected)</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f3f2f1;
+      margin: 0;
+      padding: 20px;
+      user-select: none; /* Заборона виділення та копіювання */
+    }
+    .quiz-card {
+      max-width: 750px;
+      margin: 20px auto;
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-top: 5px solid #464eb8;
+    }
+    h2 { color: #252424; margin-top: 0; }
+    .badge {
+      background: #e1dfdd;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .warning-banner {
+      background: #fde8e8;
+      color: #981b1b;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    .option-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 14px 18px;
+      margin: 10px 0;
+      background: #faf9f8;
+      border: 1px solid #e1dfdd;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+    .option-btn:hover {
+      background: #edebe9;
+      border-color: #c8c6c4;
+    }
+    .btn-submit {
+      background: #464eb8;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    .btn-submit:hover { background: #3b429f; }
+    .hidden { display: none; }
+    .blocked-box {
+      text-align: center;
+      color: #a80000;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-card" id="start-screen">
+  <h2>Вітаємо у контрольному тесті!</h2>
+  <p><strong>Тема:</strong> Кодування мультимедійних даних</p>
+  <div class="warning-banner">
+    ⚠️ УВАГА: Перехід в інші вікна, вкладки чи згортання програми суворо заборонено! При спробі переключитися тест буде автоматично анульовано.
+  </div>
+  <button class="btn-submit" onclick="startQuiz()">Розпочати виконання</button>
+</div>
+
+<div class="quiz-card hidden" id="quiz-screen">
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <span class="badge" id="progress-text">Питання 1 з 15</span>
+    <span style="color: #d13438; font-weight: 600; font-size: 14px;">🔒 Режим контролю фокусу активний</span>
+  </div>
+  
+  <h3 id="question-title" style="margin-top: 20px;">Текст питання...</h3>
+  <div id="options-box"></div>
+</div>
+
+<div class="quiz-card hidden" id="blocked-screen">
+  <div class="blocked-box">
+    <h1>❌ ТЕСТ АНУЛЬОВАНО</h1>
+    <p style="font-size: 18px; color: #323130;">Ви залишили активне вікно тесту або перейшли в іншу програму/вкладку.</p>
+    <p>Спробу фіксації втрати фокусу відправлено викладачу.</p>
+  </div>
+</div>
+
+<div class="quiz-card hidden" id="result-screen">
+  <h2>Тест завершено!</h2>
+  <p id="final-score" style="font-size: 20px; font-weight: bold;"></p>
+</div>
+
+<script>
+  const questions = [
+    { q: "Кількість кольорів моделі RGB (24 біти) дорівнює...", opts: ["6 144 032", "256", "16 777 216", "1024"], a: 2 },
+    { q: "У комп'ютерних системах кольори кодуються у форматі...", opts: ["десяткового коду", "шістнадцяткового коду", "Двійкового коду", "вісімкового коду"], a: 1 },
+    { q: "Перед числовим значенням кольору в шістнадцятковій системі числення має бути знак...", opts: ["&", "@", "#", "$"], a: 2 },
+    { q: "Для кодування двох кольорів достатньо...", opts: ["1-го біта", "8-ми бітів", "2-х бітів", "4-х бітів"], a: 0 },
+    { q: "Через переведення амплітуди звукових коливань у числові значення кодується...", opts: ["відео", "звук", "зображення", "текст"], a: 1 },
+    { q: "Глибина кольору — це кількість бітів, потрібних для кодування кольору одного пікселя.", opts: ["Так", "Ні"], a: 0 },
+    { q: "Колір кожного пікселя кодується числовим значенням.", opts: ["Так", "Ні"], a: 0 },
+    { q: "Бітова глибина — це найменший елемент растрового зображення.", opts: ["Так", "Ні"], a: 1 },
+    { q: "У колірній моделі RGB колір формується червоним, зеленим і синім кольорами світла.", opts: ["Так", "Ні"], a: 0 },
+    { q: "Відео кодується як послідовність кадрів із заданою частотою зміни та стискається перед збереженням.", opts: ["Так", "Ні"], a: 0 },
+    { q: "Який колір утворюється із такими значеннями каналів у моделі RGB: червоний — 255, зелений — 0, синій — 0?", opts: ["Зелений", "Жовтий", "Червоний", "Синій"], a: 2 },
+    { q: "Який колір утворюється із такими значеннями каналів у моделі RGB: червоний — 0, зелений — 0, синій — 255?", opts: ["Жовтий", "Синій", "Червоний", "Зелений"], a: 1 },
+    { q: "Який колір моделі RGB у шістнадцятковій системі числення відповідає коду #00FF00?", opts: ["Синій", "Зелений", "Жовтий", "Червоний"], a: 1 },
+    { q: "Який колір моделі RGB у шістнадцятковій системі числення відповідає коду #FF00FF?", opts: ["Синій", "Червоний", "Пурпуровий", "Світло-зелений"], a: 2 },
+    { q: "Який шістнадцятковий код моделі RGB відповідає фіолетовому кольору?", opts: ["#0000FF", "#7700FF", "#FFFF00", "#FF0000"], a: 1 }
+  ];
+
+  let currentIdx = 0;
+  let score = 0;
+  let isQuizActive = false;
+
+  function startQuiz() {
+    document.getElementById('start-screen').classList.add('hidden');
+    document.getElementById('quiz-screen').classList.remove('hidden');
+    isQuizActive = true;
+    
+    // Вмикаємо відстеження переключення вікон
+    window.addEventListener('blur', blockQuiz);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) blockQuiz();
+    });
+
+    renderQuestion();
+  }
+
+  function blockQuiz() {
+    if (!isQuizActive) return;
+    isQuizActive = false;
+    document.getElementById('quiz-screen').classList.add('hidden');
+    document.getElementById('blocked-screen').classList.remove('hidden');
+  }
+
+  function renderQuestion() {
+    if (currentIdx >= questions.length) {
+      finishQuiz();
+      return;
+    }
+    const item = questions[currentIdx];
+    document.getElementById('progress-text').innerText = `Питання ${currentIdx + 1} з ${questions.length}`;
+    document.getElementById('question-title').innerText = item.q;
+    
+    const box = document.getElementById('options-box');
+    box.innerHTML = '';
+    
+    item.opts.forEach((optText, optIdx) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.innerText = optText;
+      btn.onclick = () => {
+        if (optIdx === item.a) score++;
+        currentIdx++;
+        renderQuestion();
+      };
+      box.appendChild(btn);
+    });
+  }
+
+  function finishQuiz() {
+    isQuizActive = false;
+    window.removeEventListener('blur', blockQuiz);
+    document.getElementById('quiz-screen').classList.add('hidden');
+    document.getElementById('result-screen').classList.remove('hidden');
+    document.getElementById('final-score').innerText = `Ваш результат: ${score} з ${questions.length} балів.`;
+  }
+</script>
+</body>
+</html>
